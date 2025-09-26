@@ -1,9 +1,10 @@
+import Footer from "@/components/footer";
+import Header from "@/components/header";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import "./globals.css";
-import { Button } from "@/components/ui/button";
 import { Inter } from "next/font/google";
-import Footer from "@/components/footer";
+import {ClerkProvider} from '@clerk/nextjs';
+import "./globals.css"
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
         <head />
         <body className={`${inter.className}`}>
@@ -28,7 +29,9 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <header>{/* header */}</header>
+            <header>
+              <Header />
+            </header>
             <main>{children}</main>
             <footer>
               <Footer />
@@ -36,6 +39,6 @@ export default function RootLayout({
           </ThemeProvider>
         </body>
       </html>
-    </>
+    </ClerkProvider>
   );
 }

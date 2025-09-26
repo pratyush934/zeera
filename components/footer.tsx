@@ -1,242 +1,198 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
+import React from 'react';
+import Link from 'next/link';
+import { 
+  footerSections, 
+  socialLinks, 
+  brandInfo, 
+  legalLinks, 
+  footerConfig 
+} from '@/constants/footer';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import {
+  Zap,
+  BarChart3,
+  FileText,
+  Settings,
+  Calendar,
+  HelpCircle,
+  Users,
+  Globe,
+  Mail,
+  MessageSquare,
+  Shield,
   Github,
   Twitter,
   Linkedin,
-  Mail,
-  Globe,
-  Shield,
-  HelpCircle,
-  FileText,
-  Users,
-  Settings,
-  BarChart3,
-  Calendar,
-  MessageSquare,
-  Zap,
   ArrowUp,
-} from "lucide-react";
+  Send,
+  ExternalLink
+} from 'lucide-react';
+
+// Icon mapping
+const iconMap = {
+  Zap,
+  BarChart3,
+  FileText,
+  Settings,
+  Calendar,
+  HelpCircle,
+  Users,
+  Globe,
+  Mail,
+  MessageSquare,
+  Shield,
+  Github,
+  Twitter,
+  Linkedin,
+};
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const [email, setEmail] = React.useState('');
+  const [isSubscribed, setIsSubscribed] = React.useState(false);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      setIsSubscribed(true);
+      setEmail('');
+      setTimeout(() => setIsSubscribed(false), 3000);
+    }
   };
 
-  const footerSections = [
-    {
-      title: "Product",
-      links: [
-        {
-          name: "Features",
-          href: "/features",
-          icon: <Zap className="h-3 w-3" />,
-        },
-        {
-          name: "Pricing",
-          href: "/pricing",
-          icon: <BarChart3 className="h-3 w-3" />,
-        },
-        {
-          name: "Templates",
-          href: "/templates",
-          icon: <FileText className="h-3 w-3" />,
-        },
-        {
-          name: "Integrations",
-          href: "/integrations",
-          icon: <Settings className="h-3 w-3" />,
-        },
-        {
-          name: "Roadmap",
-          href: "/roadmap",
-          icon: <Calendar className="h-3 w-3" />,
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      links: [
-        {
-          name: "Documentation",
-          href: "/docs",
-          icon: <FileText className="h-3 w-3" />,
-        },
-        {
-          name: "Help Center",
-          href: "/help",
-          icon: <HelpCircle className="h-3 w-3" />,
-        },
-        {
-          name: "Community",
-          href: "/community",
-          icon: <Users className="h-3 w-3" />,
-        },
-        { name: "Blog", href: "/blog", icon: <Globe className="h-3 w-3" /> },
-        {
-          name: "API Reference",
-          href: "/api",
-          icon: <Settings className="h-3 w-3" />,
-        },
-      ],
-    },
-    {
-      title: "Company",
-      links: [
-        { name: "About", href: "/about", icon: <Users className="h-3 w-3" /> },
-        {
-          name: "Careers",
-          href: "/careers",
-          icon: <Users className="h-3 w-3" />,
-        },
-        {
-          name: "Contact",
-          href: "/contact",
-          icon: <Mail className="h-3 w-3" />,
-        },
-        { name: "Press", href: "/press", icon: <Globe className="h-3 w-3" /> },
-        {
-          name: "Partners",
-          href: "/partners",
-          icon: <Users className="h-3 w-3" />,
-        },
-      ],
-    },
-    {
-      title: "Support",
-      links: [
-        {
-          name: "Help Desk",
-          href: "/support",
-          icon: <MessageSquare className="h-3 w-3" />,
-        },
-        {
-          name: "Status",
-          href: "/status",
-          icon: <Shield className="h-3 w-3" />,
-        },
-        {
-          name: "Security",
-          href: "/security",
-          icon: <Shield className="h-3 w-3" />,
-        },
-        {
-          name: "Contact Sales",
-          href: "/sales",
-          icon: <Mail className="h-3 w-3" />,
-        },
-        {
-          name: "Enterprise",
-          href: "/enterprise",
-          icon: <Users className="h-3 w-3" />,
-        },
-      ],
-    },
-  ];
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  const socialLinks = [
-    {
-      name: "GitHub",
-      href: "https://github.com/pratyush934",
-      icon: <Github className="h-4 w-4" />,
-    },
-    {
-      name: "Twitter",
-      href: "https://twitter.com/@Pratyush934",
-      icon: <Twitter className="h-4 w-4" />,
-    },
-    {
-      name: "LinkedIn",
-      href: "https://linkedin.com",
-      icon: <Linkedin className="h-4 w-4" />,
-    },
-    {
-      name: "Email",
-      href: "mailto:hello@zeera.app",
-      icon: <Mail className="h-4 w-4" />,
-    },
-  ];
+  const getIcon = (iconName: string, size = 16) => {
+    const IconComponent = iconMap[iconName as keyof typeof iconMap];
+    return IconComponent ? <IconComponent size={size} /> : null;
+  };
 
   return (
-    <footer className="bg-background border-t border-border/40">
-      <div className="container mx-auto px-4 py-12">
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 mb-8">
-          {/* Brand Section */}
-          <div className="lg:col-span-2 space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <span className="text-sm font-bold text-primary-foreground">
-                  Z
-                </span>
-              </div>
-              <span className="text-xl font-bold">Zeera</span>
-              <Badge variant="secondary" className="text-xs">
-                Beta
-              </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground max-w-sm">
-              Modern project management platform that helps teams stay
-              organized, collaborate effectively, and deliver results faster.
-            </p>
-
-            {/* Social Links */}
-            <div className="flex space-x-3">
-              {socialLinks.map((social) => (
-                <Button
-                  key={social.name}
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 hover:bg-muted/80 transition-colors"
-                  asChild
-                >
-                  <Link href={social.href} aria-label={social.name}>
-                    {social.icon}
-                  </Link>
-                </Button>
-              ))}
-            </div>
-
-            {/* Newsletter Signup */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Stay updated</p>
-              <div className="flex space-x-2">
-                <input
+    <footer className="bg-background border-t border-border relative">
+      {/* Newsletter Section */}
+      {footerConfig.showNewsletter && (
+        <div className="bg-muted/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="text-center max-w-2xl mx-auto">
+              <h3 className="text-2xl font-semibold text-foreground mb-2">
+                Stay in the loop
+              </h3>
+              <p className="text-muted-foreground mb-6">
+                Get the latest updates, tips, and insights delivered straight to your inbox.
+              </p>
+              <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <Input
                   type="email"
                   placeholder="Enter your email"
-                  className="flex h-8 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="flex-1"
                 />
-                <Button size="sm" className="px-3">
-                  Subscribe
+                <Button type="submit" disabled={isSubscribed}>
+                  {isSubscribed ? (
+                    <>Subscribed! ✓</>
+                  ) : (
+                    <>
+                      <Send size={16} className="mr-2" />
+                      Subscribe
+                    </>
+                  )}
                 </Button>
-              </div>
+              </form>
             </div>
           </div>
+        </div>
+      )}
 
-          {/* Footer Links Grid */}
+      {/* Main Footer Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+          {/* Brand Section */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-primary-foreground font-bold text-lg">
+                {brandInfo.logo}
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-xl font-bold text-foreground">{brandInfo.name}</span>
+                {brandInfo.status && (
+                  <Badge variant="secondary" className="text-xs">
+                    {brandInfo.status}
+                  </Badge>
+                )}
+              </div>
+            </div>
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+              {brandInfo.description}
+            </p>
+            
+            {/* Social Links */}
+            <div className="flex space-x-3">
+              <TooltipProvider>
+                {socialLinks.map((social) => (
+                  <Tooltip key={social.name}>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        asChild
+                        className="h-9 w-9 hover:bg-primary hover:text-primary-foreground transition-colors"
+                      >
+                        <Link href={social.href} target="_blank" rel="noopener noreferrer">
+                          {getIcon(social.icon, 18)}
+                        </Link>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{social.name}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </TooltipProvider>
+            </div>
+
+            {footerConfig.showMobileMessage && (
+              <div className="block md:hidden pt-2">
+                <p className="text-sm text-muted-foreground">
+                  {footerConfig.mobileMessage}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer Links Sections */}
           {footerSections.map((section) => (
             <div key={section.title} className="space-y-4">
-              <h3 className="text-sm font-semibold text-foreground">
+              <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider">
                 {section.title}
-              </h3>
-              <ul className="space-y-2">
+              </h4>
+              <ul className="space-y-3">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="flex items-center space-x-2 text-sm text-muted-foreground hover:text-foreground transition-colors group"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center space-x-2 group"
                     >
-                      <span className="opacity-60 group-hover:opacity-100 transition-opacity">
-                        {link.icon}
+                      <span className="text-muted-foreground/70 group-hover:text-foreground/70">
+                        {getIcon(link.icon, 14)}
                       </span>
                       <span>{link.name}</span>
+                      {link.href.startsWith('http') && (
+                        <ExternalLink size={12} className="opacity-0 group-hover:opacity-50 transition-opacity" />
+                      )}
                     </Link>
                   </li>
                 ))}
@@ -244,61 +200,62 @@ const Footer = () => {
             </div>
           ))}
         </div>
+      </div>
 
-        <Separator className="my-6" />
+      <Separator />
 
-        {/* Bottom Footer */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 text-xs text-muted-foreground">
-            <p>&copy; {currentYear} Zeera. All rights reserved.</p>
-            <div className="flex space-x-4">
-              <Link
-                href="/privacy"
-                className="hover:text-foreground transition-colors"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="/terms"
-                className="hover:text-foreground transition-colors"
-              >
-                Terms of Service
-              </Link>
-              <Link
-                href="/cookies"
-                className="hover:text-foreground transition-colors"
-              >
-                Cookie Policy
-              </Link>
-              <Link
-                href="/sitemap"
-                className="hover:text-foreground transition-colors"
-              >
-                Sitemap
-              </Link>
+      {/* Bottom Section */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-6">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} {brandInfo.name}. {footerConfig.copyrightText}
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              {legalLinks.map((link, index) => (
+                <React.Fragment key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                  {index < legalLinks.length - 1 && (
+                    <span className="text-muted-foreground/50 text-xs">•</span>
+                  )}
+                </React.Fragment>
+              ))}
             </div>
           </div>
 
           {/* Scroll to Top Button */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={scrollToTop}
-            className="flex items-center space-x-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowUp className="h-3 w-3" />
-            <span>Back to top</span>
-          </Button>
+          {footerConfig.showScrollToTop && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={scrollToTop}
+                    className="h-9 w-9 hover:bg-primary hover:text-primary-foreground"
+                  >
+                    <ArrowUp size={16} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Back to top</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
+      </div>
 
-        {/* Mobile-friendly flexbox alternative for smaller screens */}
-        <div className="block md:hidden mt-8">
-          <div className="flex flex-wrap justify-center space-x-4 text-xs text-muted-foreground">
-            <Badge variant="outline" className="text-xs">
-              Made with ❤️ for teams
-            </Badge>
-          </div>
-        </div>
+      {/* Performance optimization: Reduce layout shift */}
+      <div className="h-0 overflow-hidden" aria-hidden="true">
+        {Object.values(iconMap).map((Icon, index) => (
+          <Icon key={index} size={0} />
+        ))}
       </div>
     </footer>
   );
