@@ -1,12 +1,17 @@
 import Footer from "@/components/footer";
 import Header from "@/components/header";
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Inter } from "next/font/google";
-import {ClerkProvider} from '@clerk/nextjs';
-import "./globals.css"
+import { Roboto } from "next/font/google";
+import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({ 
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700"],
+  variable: "--font-roboto",
+});
 
 export const metadata: Metadata = {
   title: "Zeera",
@@ -19,10 +24,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: [dark],
+      }}
+    >
       <html lang="en" suppressHydrationWarning>
         <head />
-        <body className={`${inter.className}`}>
+        <body className={`${roboto.variable}`}>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"

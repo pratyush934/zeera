@@ -25,6 +25,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import {
   BarChart3,
   Bell,
+  Building2,
   FolderOpen,
   Home,
   LogOut,
@@ -120,27 +121,11 @@ const Header = () => {
 
         {/* Right Section */}
         <div className="flex items-center space-x-3">
-          {/* New Project Button (when signed in) */}
+          {/* Create Project Button (when signed in) */}
           {isSignedIn && (
             <Button size="sm" className="hidden sm:flex items-center space-x-2">
               <Plus className="h-4 w-4" />
-              <span>New Project</span>
-            </Button>
-          )}
-
-          {/* Notifications (when signed in) */}
-          {isSignedIn && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="hidden sm:flex h-9 w-9 relative"
-            >
-              <Bell className="h-4 w-4" />
-              {/* Notification dot */}
-              <span className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
-                2
-              </span>
-              <span className="sr-only">Notifications</span>
+              <span>Create Project</span>
             </Button>
           )}
 
@@ -187,8 +172,12 @@ const Header = () => {
                   <span>Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
+                  <Building2 className="mr-2 h-4 w-4" />
+                  <Link href={"/onboarding"}>Organization</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>Manage Account</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
