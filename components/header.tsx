@@ -24,7 +24,6 @@ import {
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import {
   BarChart3,
-  Bell,
   Building2,
   FolderOpen,
   Home,
@@ -33,7 +32,7 @@ import {
   Plus,
   Settings,
   User,
-  Users,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 
@@ -157,7 +156,7 @@ const Header = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
+                  <div className="flex flex-col space-y-1 p-2">
                     <p className="text-sm font-medium leading-none">
                       {user?.fullName || user?.username}
                     </p>
@@ -167,25 +166,27 @@ const Header = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <User className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
+                  <User className="mr-3 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Building2 className="mr-2 h-4 w-4" />
-                  <Link href={"/onboarding"}>Organization</Link>
+                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
+                  <Building2 className="mr-3 h-4 w-4" />
+                  <Link href={"/onboarding"} className="flex items-center w-full">
+                    Organization
+                  </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <Settings className="mr-2 h-4 w-4" />
+                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
+                  <Settings className="mr-3 h-4 w-4" />
                   <span>Manage Account</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <SignOutButton>
+                <SignOutButton>
+                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 focus:bg-red-50 dark:focus:bg-red-950/20 transition-colors">
+                    <LogOut className="mr-3 h-4 w-4" />
                     <span>Log out</span>
-                  </SignOutButton>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </SignOutButton>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
