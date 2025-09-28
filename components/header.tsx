@@ -1,17 +1,6 @@
-"use client";
-
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { RainbowButton } from "@/components/ui/rainbow-button";
 import {
   Sheet,
@@ -21,23 +10,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import {
-  BarChart3,
-  Building2,
-  FolderOpen,
-  Home,
-  LogOut,
-  Menu,
-  Plus,
-  Settings,
-  User,
-  Users
-} from "lucide-react";
+import { CheckUser } from "@/lib/checkUser";
+import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { BarChart3, FolderOpen, Home, Menu, Plus, Users } from "lucide-react";
 import Link from "next/link";
+import UserLoading from "./user-loading";
+import UserMenu from "./user-menu";
 
-const Header = () => {
-  const { isSignedIn, user } = useUser();
+const Header = async () => {
+  await CheckUser();
 
   // Navigation items
   const navItems = [
@@ -121,12 +102,17 @@ const Header = () => {
         {/* Right Section */}
         <div className="flex items-center space-x-3">
           {/* Create Project Button (when signed in) */}
-          {isSignedIn && (
-            <Button size="sm" className="hidden sm:flex items-center space-x-2">
-              <Plus className="h-4 w-4" />
-              <span>Create Project</span>
-            </Button>
-          )}
+          <SignedIn>
+            <Link href={"/project/create"}>
+              <Button
+                size="sm"
+                className="hidden sm:flex items-center space-x-2"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Create Project</span>
+              </Button>
+            </Link>
+          </SignedIn>
 
           {/* Theme Toggler */}
           <div className="flex items-center">
@@ -134,68 +120,20 @@ const Header = () => {
           </div>
 
           {/* User Authentication */}
-          {isSignedIn ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-9 w-9 rounded-full"
-                >
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage
-                      src={user?.imageUrl}
-                      alt={user?.fullName || user?.username || "User avatar"}
-                    />
-                    <AvatarFallback className="bg-primary text-primary-foreground">
-                      {user?.fullName?.charAt(0) ||
-                        user?.username?.charAt(0) ||
-                        "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1 p-2">
-                    <p className="text-sm font-medium leading-none">
-                      {user?.fullName || user?.username}
-                    </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {user?.primaryEmailAddress?.emailAddress}
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
-                  <User className="mr-3 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
-                  <Building2 className="mr-3 h-4 w-4" />
-                  <Link href={"/onboarding"} className="flex items-center w-full">
-                    Organization
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer hover:bg-accent/50 focus:bg-accent/50 transition-colors">
-                  <Settings className="mr-3 h-4 w-4" />
-                  <span>Manage Account</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <SignOutButton>
-                  <DropdownMenuItem className="cursor-pointer text-red-600 focus:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 focus:bg-red-50 dark:focus:bg-red-950/20 transition-colors">
-                    <LogOut className="mr-3 h-4 w-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </SignOutButton>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <SignInButton mode="modal">
-              <RainbowButton variant="outline">Sign In</RainbowButton>
-            </SignInButton>
-          )}
+          <div className="flex items-center gap-4">
+            <SignedOut>
+              <SignInButton forceRedirectUrl="/onboarding">
+                <RainbowButton variant="outline">Login</RainbowButton>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserMenu />
+            </SignedIn>
+          </div>
         </div>
       </div>
+
+      <UserLoading />
     </header>
   );
 };

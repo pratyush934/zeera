@@ -6,8 +6,9 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Roboto } from "next/font/google";
 import "./globals.css";
+import { Particles } from "@/components/ui/particles";
 
-const roboto = Roboto({ 
+const roboto = Roboto({
   subsets: ["latin"],
   weight: ["300", "400", "500", "700"],
   variable: "--font-roboto",
@@ -38,6 +39,13 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Particles
+              className="absolute inset-0 z-0"
+              quantity={500}
+              ease={80}
+              color="#3b82f6"
+              refresh={false}
+            />
             <header>
               <Header />
             </header>

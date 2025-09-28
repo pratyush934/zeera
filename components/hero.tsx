@@ -71,7 +71,7 @@ const Hero = () => {
       {/* Particles Background */}
       <Particles
         className="absolute inset-0 z-0"
-        quantity={100}
+        quantity={1000}
         ease={80}
         color="#3b82f6"
         refresh={false}
