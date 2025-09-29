@@ -1,8 +1,7 @@
 "use server";
 
 import db from "@/lib/prisma";
-import { auth, clerkClient, clerkClient } from "@clerk/nextjs/server";
-import { exportPages } from "next/dist/export/worker";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 /* 
     1. getOrganizations
