@@ -1,5 +1,10 @@
-import db from "@/lib/prisma";
+import { ProjectInterface } from "@/interfaces/projectInterface";
 import { auth } from "@clerk/nextjs/server";
+
+
+export async function createProject(data : ProjectInterface) {
+    
+}
 
 export async function getProjectes(organisationId: string) {
     
