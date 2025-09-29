@@ -18,6 +18,7 @@ import UserLoading from "./user-loading";
 import UserMenu from "./user-menu";
 
 const Header = async () => {
+
   await CheckUser();
 
   // Navigation items
@@ -29,7 +30,7 @@ const Header = async () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="fixed top-0 z-50 w-full border-b border-border/40 backdrop-blur-sm">
       <div className="container flex h-16 max-w-screen-2xl items-center justify-between mx-auto px-4 sm:px-6 lg:px-8">
         {/* Mobile Menu */}
         <div className="mr-4 flex md:hidden">

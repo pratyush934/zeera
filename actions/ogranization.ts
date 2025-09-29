@@ -30,7 +30,7 @@ export async function getOrganization(slug: string) {
   }
 
   const organisation = await client.organizations.getOrganization({
-    slug: slug,
+    organizationId: slug,
   });
 
   if (!organisation) {
@@ -81,6 +81,19 @@ export async function getProjects(orgId: string) {
     where: {
       organisationId: orgId,
     },
+    include: {
+      issues: {
+        select: {
+          id: true,
+        },
+      },
+      _count: {
+        select: {
+          issues: true,
+          sprints: true,
+        },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -92,5 +105,88 @@ export async function getProjects(orgId: string) {
 export async function getUserIssues(userId: string) {
   const { orgId } = await auth();
 
-  console.log(orgId + userId);
+  if (!userId || !orgId) {
+    console.log(
+      `not able to get the userId or orgId, please look at the getUserIssues`
+    );
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) {
+    console.log(`not able to get the user here`);
+    return null;
+  }
+
+  const issues = await db.issue.findMany({
+    where: {
+      OR: [{ assigneeId: userId }, { reporterId: userId }],
+      Project: {
+        organisationId: orgId,
+      },
+    },
+    include: {
+      Project: true,
+      assignee: true,
+      reporter: true,
+    },
+    orderBy: {
+      updatedAt: "desc",
+    },
+  });
+
+  if (!issues) {
+    console.log(`no issue was found with such parameters`);
+    return null;
+  }
+  return issues;
+}
+
+export async function getOrganisationUsers(orgId: string) {
+  const { userId } = await auth();
+  const client = await clerkClient();
+
+  if (!userId) {
+    console.log(`the userId is not there so better make decision`);
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) {
+    console.log(
+      `there is not any user with this userId , look at the getOrganisationUsers`
+    );
+    return null;
+  }
+
+  const members = await client.organizations.getOrganizationMembershipList({
+    organizationId: orgId,
+  });
+
+  const userIds = members.data.map((members) => members.publicUserData?.userId);
+
+  const users = await db.user.findMany({
+    where: {
+      clerkUserId: {
+        in: userIds as string[],
+      },
+    },
+  });
+
+  if (!users) {
+    console.log(`no users were found with this orgId`);
+    return null;
+  }
+
+  return users;
 }

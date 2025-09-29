@@ -39,20 +39,24 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Particles
-              className="absolute inset-0 z-0"
-              quantity={500}
-              ease={80}
-              color="#3b82f6"
-              refresh={false}
-            />
-            <header>
-              <Header />
-            </header>
-            <main>{children}</main>
-            <footer>
-              <Footer />
-            </footer>
+            <div className="relative min-h-screen">
+              <Particles
+                className="fixed inset-0 z-0 pointer-events-none"
+                quantity={300}
+                ease={80}
+                color="#3b82f6"
+                refresh={false}
+              />
+              <div className="relative z-10">
+                <header>
+                  <Header />
+                </header>
+                <main>{children}</main>
+                <footer>
+                  <Footer />
+                </footer>
+              </div>
+            </div>
           </ThemeProvider>
         </body>
       </html>
