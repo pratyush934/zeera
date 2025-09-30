@@ -131,7 +131,7 @@ const Organisation = async ({
 
       {/* Main Content - Project List */}
       <div className="space-y-6">
-        <ProjectList params={params} />
+        <ProjectList params={{ organisationId: organisation.id }} />
       </div>
     </div>
   );
