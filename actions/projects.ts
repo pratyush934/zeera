@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { ProjectInterface } from "@/interfaces/projectInterface";
 import db from "@/lib/prisma";
@@ -54,15 +54,86 @@ export async function createProject(data: ProjectInterface) {
   }
 }
 
-export async function getProjectes(organisationId: string) {
-  const { userId } = await auth();
+export async function getProjects(projectId: string) {
+  const { userId, orgId } = await auth();
 
   if (!userId) {
+    console.log(`userId is not there in getProjects`);
+    return null;
+  }
+
+  if (!orgId) {
+    console.log(`orgId is not there in getProjects`);
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) {
+    console.log(`there is not user with the userId ${userId}`);
+    return null;
+  }
+
+  const project = await db.project.findUnique({
+    where: {
+      id: projectId,
+    },
+    include: {
+      sprints: {
+        orderBy: { createdAt: "desc" },
+      },
+    },
+  });
+
+  if (!project) {
+    console.log(`there is not project with the projectId ${project}`);
+    return null;
+  }
+
+  if (project.organisationId !== orgId) {
     console.log(
-      `there is an issue with userId and please look at this in getProjects`
+      `there is a mismatch in organisationId and orgId in getProjects`
     );
     return null;
   }
 
-  console.log(organisationId);
+  return project;
+}
+
+export async function DeleteProject(projectId: string) {
+  const { userId, orgId, orgRole } = await auth();
+
+  if (!userId || !orgId) {
+    console.log(`userId is not there in getProjects`);
+    return null;
+  }
+
+  if (orgRole !== "org:admin") {
+    console.log(`how dare you ?, you are not an admin`);
+  }
+
+  const project = await db.project.findUnique({
+    where: { id: projectId },
+  });
+
+  if (!project || project.organisationId !== orgId) {
+    console.log(
+      `either the project does not exist or ogranisationId !=== orgId in DeleteProject`
+    );
+    return null;
+  }
+
+  const success = await db.project.delete({
+    where: { id: projectId },
+  });
+
+  if (!success) {
+    console.log(`such a shame you littlefinger , in DeleteProject`);
+    return null;
+  }
+  return { success: true };
 }
