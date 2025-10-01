@@ -1,9 +1,8 @@
 "use server";
 
-import { IssueInterface, IssueStatus } from "@/interfaces/issueInterface";
+import { IssueInterface } from "@/interfaces/issueInterface";
 import db from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
-import { success } from "zod";
 
 export async function getIssuesForSprint(sprintId: string) {
   const { userId, orgId } = await auth();
@@ -30,39 +29,6 @@ export async function getIssuesForSprint(sprintId: string) {
   }
   return issues;
 }
-
-/* 
-    createIssue
-    updateIssue order
-    deleteIssue 
-    updateIssue
-*/
-
-/* 
-model Issue {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
-
-  status   IssueStatus
-  order    Int
-  priority IssuePriority
-
-  reporter   User?    @relation("Reporter", fields: [reporterId], references: [id])
-  reporterId String?
-  assignee   User     @relation("Assignee", fields: [assigneeId], references: [id])
-  assigneeId String
-  Project    Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  projectId  String?
-  Sprint     Sprint?  @relation(fields: [sprintId], references: [id], onDelete: Cascade)
-  sprintId   String?
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  @@unique([status, order])
-}
-*/
 
 export async function createIssue(data: IssueInterface, projectId: string) {
   const { userId, orgId } = await auth();
@@ -139,4 +105,99 @@ export async function UpdateIssuesOrder(updatedIssues: IssueInterface[]) {
   });
 
   return { success: true };
+}
+
+export async function deleteIssue(issueId: string) {
+  const { userId, orgId } = await auth();
+
+  if (!userId || !orgId) {
+    console.log(`userId or orgId just don't exist there in the deleteIssue`);
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) {
+    console.log(`user does not exist in deleteIssue`);
+    return null;
+  }
+
+  const issue = await db.issue.findUnique({
+    where: {
+      id: issueId,
+    },
+    include: {
+      Project: true,
+    },
+  });
+
+  if (issue?.reporterId !== userId) {
+    console.log(`not so good and you have to understand it`);
+    return null;
+  }
+
+  await db.issue.delete({
+    where: {
+      id: issueId,
+    },
+    include: {
+      Project: true,
+    },
+  });
+
+  return { success: true };
+}
+
+export async function UpdateIssue(issueId: string, Issue: IssueInterface) {
+  const { userId, orgId } = await auth();
+
+  if (!userId || !orgId) {
+    console.log(`userId or orgId just don't exist there in the deleteIssue`);
+    return null;
+  }
+
+  const user = await db.user.findUnique({
+    where: {
+      clerkUserId: userId,
+    },
+  });
+
+  if (!user) {
+    console.log(`user does not exist in deleteIssue`);
+    return null;
+  }
+
+  const issue = await db.issue.findUnique({
+    where: {
+      id: issueId,
+    },
+    include: {
+      Project: true,
+    },
+  });
+
+  if (issue?.Project?.organisationId !== orgId) {
+    console.log(`organisation just didn't match there`);
+    return null;
+  }
+
+  const updatedOne = await db.issue.update({
+    where: {
+      id: issueId,
+    },
+    data: {
+      status: Issue.status as "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE",
+      priority: Issue.priority as "LOW" | "MEDIUM" | "HIGH" | "URGENT",
+    },
+    include: {
+      assignee: true,
+      reporter: true,
+    },
+  });
+
+  return updatedOne;
 }
