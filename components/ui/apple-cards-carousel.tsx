@@ -17,7 +17,7 @@ import Image, { ImageProps } from "next/image";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 
 interface CarouselProps {
-  items: JSX.Element[];
+  items: React.ReactElement[];
   initialScroll?: number;
 }
 
@@ -90,7 +90,7 @@ export const Carousel = ({ items, initialScroll = 0 }: CarouselProps) => {
     <CarouselContext.Provider
       value={{ onCardClose: handleCardClose, currentIndex }}
     >
-      <div className="relative w-full">
+      <div className="relative w-full" suppressHydrationWarning>
         <div
           className="flex w-full overflow-x-scroll overscroll-x-auto scroll-smooth py-10 [scrollbar-width:none] md:py-20"
           ref={carouselRef}

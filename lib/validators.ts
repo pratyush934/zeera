@@ -16,4 +16,18 @@ export const projectScehma = z.object({
             .optional(),
 });
 
+export const issueSchema = z.object({
+  title: z
+    .string()
+    .min(1, "Issue title is required")
+    .max(200, "Title cannot exceed 200 characters"),
+  description: z
+    .string()
+    .max(2000, "Description cannot exceed 2000 characters")
+    .optional(),
+  status: z.enum(["TODO", "IN_PROGRESS", "IN_REVIEW", "DONE"]),
+  priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
+  assigneeId: z.string().optional(),
+});
+
 

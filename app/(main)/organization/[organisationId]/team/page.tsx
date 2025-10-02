@@ -4,10 +4,11 @@ import { Separator } from "@/components/ui/separator";
 import { Building2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import OrganizationHeader from "./_components/organization-header";
-import ProjectList from "./_components/project-list";
+import InvitationsList from "../_components/invitations-list";
+import OrganizationHeader from "../_components/organization-header";
+import TeamMembersList from "../_components/team-members-list";
 
-const Organisation = async ({
+const TeamPage = async ({
   params,
 }: {
   params: Promise<{ organisationId: string }>;
@@ -46,14 +47,14 @@ const Organisation = async ({
       {/* Navigation Tabs */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1 rounded-lg bg-muted p-1">
-          <Button variant="default" size="sm" className="rounded-md">
-            Projects
-          </Button>
-          <Link href={`/organization/${organisation.id}/team`}>
+          <Link href={`/organization/${organisation.id}`}>
             <Button variant="ghost" size="sm" className="rounded-md">
-              Team
+              Projects
             </Button>
           </Link>
+          <Button variant="default" size="sm" className="rounded-md">
+            Team
+          </Button>
           <Button variant="ghost" size="sm" className="rounded-md" disabled>
             Analytics
           </Button>
@@ -65,12 +66,13 @@ const Organisation = async ({
 
       <Separator />
 
-      {/* Main Content - Project List */}
+      {/* Team Management Content */}
       <div className="space-y-6">
-        <ProjectList params={{ organisationId: organisation.id }} />
+        <TeamMembersList organizationId={organisation.id} />
+        <InvitationsList organizationId={organisation.id} />
       </div>
     </div>
   );
 };
 
-export default Organisation;
+export default TeamPage;

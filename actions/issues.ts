@@ -1,20 +1,48 @@
 "use server";
 
-import { IssueInterface } from "@/interfaces/issueInterface";
+import { IssueInterface, CreateIssueData } from "@/interfaces/issueInterface";
 import db from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 
 export async function getIssuesForSprint(sprintId: string) {
+  console.log(
+    "🔵 getIssuesForSprint called with sprintId:",
+    sprintId,
+    "at",
+    new Date().toISOString()
+  );
+
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
     console.log(`there is no userId or orgId in getIssuesForSprint`);
-    return null;
+    throw new Error("Bla Bla Bla");
   }
+
+  // Get the project ID from the sprint to also fetch unassigned issues
+  const sprint = await db.sprint.findUnique({
+    where: { id: sprintId },
+    select: { projectId: true },
+  });
+
+  if (!sprint) {
+    console.log(`Sprint ${sprintId} not found`);
+    return [];
+  }
+
+//   console.log(`🔍 Sprint found with projectId: ${sprint.projectId}`);
+
+  // No debug logging to prevent issues
 
   const issues = await db.issue.findMany({
     where: {
-      sprintId: sprintId,
+      OR: [
+        { sprintId: sprintId }, // Issues assigned to this sprint
+        { 
+          projectId: sprint.projectId,
+          sprintId: null // Issues in the same project but not assigned to any sprint
+        }
+      ]
     },
     include: {
       reporter: true,
@@ -23,14 +51,16 @@ export async function getIssuesForSprint(sprintId: string) {
     orderBy: [{ status: "asc" }, { order: "asc" }],
   });
 
+  // Return issues without any auto-assignment to prevent loops
+
   if (!issues) {
     console.log(`there is problem while getting issue`);
-    return null;
+    throw new Error("No issue");
   }
   return issues;
 }
 
-export async function createIssue(data: IssueInterface, projectId: string) {
+export async function createIssue(data: CreateIssueData, projectId: string, sprintId?: string) {
   const { userId, orgId } = await auth();
 
   if (!userId || !orgId) {
@@ -56,6 +86,17 @@ export async function createIssue(data: IssueInterface, projectId: string) {
 
   const newOrder = lastIssue ? lastIssue?.order + 1 : 0;
 
+  // Convert Clerk user ID to database user ID if assignee is provided
+  let assigneeDbId = null;
+  if (data.assigneeId) {
+    const assigneeUser = await db.user.findUnique({
+      where: {
+        clerkUserId: data.assigneeId,
+      },
+    });
+    assigneeDbId = assigneeUser?.id || null;
+  }
+
   const newIssue = await db.issue.create({
     data: {
       title: data.title,
@@ -65,7 +106,8 @@ export async function createIssue(data: IssueInterface, projectId: string) {
       order: newOrder,
       priority: data.priority as "LOW" | "MEDIUM" | "HIGH" | "URGENT",
       projectId: projectId,
-      assigneeId: data.assigneeId || "NULL",
+      sprintId: sprintId || data.sprintId || null,
+      assigneeId: assigneeDbId,
     },
     include: {
       assignee: true,
@@ -135,8 +177,8 @@ export async function deleteIssue(issueId: string) {
     },
   });
 
-  if (issue?.reporterId !== userId) {
-    console.log(`not so good and you have to understand it`);
+  if (issue?.reporterId !== user?.id) {
+    console.log(`User is not the reporter of this issue`);
     return null;
   }
 
@@ -185,13 +227,28 @@ export async function UpdateIssue(issueId: string, Issue: IssueInterface) {
     return null;
   }
 
+  // Convert Clerk user ID to database user ID if assignee is provided
+  let assigneeDbId = null;
+  if (Issue.assigneeId) {
+    const assigneeUser = await db.user.findUnique({
+      where: {
+        clerkUserId: Issue.assigneeId,
+      },
+    });
+    assigneeDbId = assigneeUser?.id || null;
+  }
+
   const updatedOne = await db.issue.update({
     where: {
       id: issueId,
     },
     data: {
+      title: Issue.title,
+      description: Issue.description,
       status: Issue.status as "TODO" | "IN_PROGRESS" | "IN_REVIEW" | "DONE",
       priority: Issue.priority as "LOW" | "MEDIUM" | "HIGH" | "URGENT",
+      assigneeId: assigneeDbId,
+      sprintId: Issue.sprintId,
     },
     include: {
       assignee: true,

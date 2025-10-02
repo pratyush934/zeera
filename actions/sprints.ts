@@ -35,7 +35,7 @@ export async function CreateSprint(data: Sprint, projectId: string) {
       name: data.name,
       startDate: data.startDate,
       endDate: data.endDate,
-      status: "ACTIVE",
+      status: "PLANNED",
       projectId: projectId,
     },
   });
