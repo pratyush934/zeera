@@ -20,6 +20,10 @@ export const CheckUser = async () => {
       return null;
     }
 
+    /* 
+      comment added 
+    */
+
   try {
     const loggedInUser = await db.user.findUnique({
       where: {
